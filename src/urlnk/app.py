@@ -5,25 +5,16 @@ from fastapi import FastAPI, status
 from pydantic import BaseModel, HttpUrl, TypeAdapter
 
 from .database import Base, engine
-from .models import HealthCheck
+from .routers import health
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
+
+# Initialize the FastAPI application
 app = FastAPI()
 
-
-@app.get(
-    "/health",
-    tags=["healthcheck"],
-    summary="Perform a Health Check",
-    status_code=status.HTTP_200_OK,
-    response_model=HealthCheck,
-)
-def get_health() -> HealthCheck:
-    """
-    A simple health check endpoint.
-    """
-    return HealthCheck(status="OK")
+# Include Routers
+app.include_router(health.router)
 
 
 # ------------------------------
