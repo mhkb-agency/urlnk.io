@@ -5,18 +5,12 @@ from fastapi import FastAPI, status
 from pydantic import BaseModel, HttpUrl, TypeAdapter
 
 from .database import Base, engine
+from .models import HealthCheck
 
 # Create the database tables
 Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 
-
-# ------------------------------
-# Health Check Endpoint
-# ------------------------------
-class HealthCheck(BaseModel):
-    status: str
 
 @app.get(
     "/health",
