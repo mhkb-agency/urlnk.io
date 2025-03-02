@@ -1,0 +1,18 @@
+[project]
+name = "urlnk"
+version = "0.1.0"
+description = "A simple URL shortener API."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi[standard]>=0.115.8",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "coverage>=7.6.12",
+    "mypy>=1.15.0",
+    "pytest>=8.3.4",
+]
