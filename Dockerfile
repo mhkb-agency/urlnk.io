@@ -1,14 +1,19 @@
 FROM python:3.10-slim
 
-WORKDIR /usr/src/app
-COPY pyproject.toml ./
-COPY uv.lock ./
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-RUN pip install uv --no-cache-dir
-RUN uv sync
+WORKDIR /app
+COPY pyproject.toml uv.lock README.md ./
+COPY src/urlnk ./urlnk
 
-COPY main.py ./
+# Install the application dependencies.
+RUN uv sync --frozen --no-cache
 
 EXPOSE 8000
 
-CMD ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "main.py"]
+# Run from CLI.
+CMD ["uv", "run", "fastapi", "dev", "urlnk/app.py", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# Run from package.
+# CMD ["uv", "run", "python", "-m", "urlnk"]
