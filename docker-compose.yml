@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:15
+    container_name: urlnk-db
+    restart: always
+    environment:
+      POSTGRES_USER: urlnk_user
+      POSTGRES_PASSWORD: urlnk_password
+      POSTGRES_DB: urlnk_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: urlnk-api
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgresql://urlnk_user:urlnk_password@db/urlnk_db
+    ports:
+      - "8000:8000"
+    command: ["uv", "run", "fastapi", "dev", "--host", "0.0.0.0", "--port", "8000", "main.py"]
+
+volumes:
+  postgres_data:
