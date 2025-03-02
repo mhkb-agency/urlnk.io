@@ -2,10 +2,9 @@
 A simple URL shortener.
 
 # Project setup
-Build and run Dockerfile:
+Build and run dev environment:
 ```shell
-docker build -f Dockerfile -t urlnk-api .
-docker run -p 8000:8000 --name urlnk-api urlnk-api
+docker compose --project-name urlnk up --build
 ```
 
 Test if container is running:
