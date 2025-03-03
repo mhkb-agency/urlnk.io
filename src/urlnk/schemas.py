@@ -1,5 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime
+from pydantic import HttpUrl
+
 from .database import Base
 
 
@@ -9,8 +11,11 @@ class URL(Base):
     """
     __tablename__ = "urls"
 
-    id = Column(Integer, primary_key=True, index=True)
-    short_code = Column(String(10), unique=True, index=True, nullable=False)
-    long_url = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    click_count = Column(Integer, default=0)
+    id: int = Column(Integer, primary_key=True, index=True)
+    short_code: str = Column(String(10), unique=True, index=True, nullable=False)
+    long_url: str = Column(String, nullable=False)
+    created_at: datetime = Column(DateTime, default=datetime.now(timezone.utc))
+    click_count: int = Column(Integer, default=0)
+
+    def get_long_http_url(self) -> HttpUrl:
+        return HttpUrl(self.long_url)

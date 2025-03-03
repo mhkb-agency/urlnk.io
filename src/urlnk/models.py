@@ -8,6 +8,9 @@ class URLCreate(BaseModel):
     """
     long_url: HttpUrl
 
+    def get_long_url_string(self) -> str:
+        return str(self.long_url)
+
 
 class URLResponse(BaseModel):
     """
@@ -21,7 +24,7 @@ class URLResponse(BaseModel):
     short_url: HttpUrl
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class HealthCheck(BaseModel):
