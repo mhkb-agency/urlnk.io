@@ -27,14 +27,16 @@ def override_get_db():
         db.close()
 
 
-@pytest.fixture(scope="session", autouse=True)
-def setup_database():
-    # Make sure the environment doesn't auto-create with a different engine
+@pytest.fixture(scope="function", autouse=True)
+def setup_and_teardown_database():
+    """
+    Create all tables before each test, and drop them after each test.
+    Ensures each test has a fresh, empty DB.
+    """
     os.environ["APP_ENV"] = "test"
-
-    # Create all tables once at the start
     Base.metadata.create_all(bind=engine)
-    print("Tables created in test DB: ", inspect(engine).get_table_names())
+    yield
+    Base.metadata.drop_all(bind=engine)
 
 
 # Override the dependency before any test
