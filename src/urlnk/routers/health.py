@@ -1,5 +1,3 @@
-# app/routers/health.py
-
 from fastapi import APIRouter, status
 from ..models import HealthCheck
 

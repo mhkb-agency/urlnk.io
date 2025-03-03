@@ -3,6 +3,7 @@ import string
 from typing import List, cast
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import RedirectResponse
 from pydantic import TypeAdapter, HttpUrl
 
 from sqlalchemy.orm import Session
@@ -212,3 +213,30 @@ def update_url_by_id(
         long_url=db_url.get_long_http_url(),
         short_url=short_url_validated
     )
+
+
+redirect_router = APIRouter(tags=["redirect"])
+
+
+@redirect_router.get("/{short_code}")
+def redirect_to_original(short_code: str, db: Session = Depends(get_db)) -> RedirectResponse:
+    """
+    Redirect the user to the original long URL based on the provided short_code.
+    If the short code is not found, a 404 error is returned.
+    This endpoint does not return JSON data, but a 302 Redirect response.
+    """
+    # Find the database record matching the short_code
+    db_url = cast(URL, db.query(URL).filter(URL.short_code == short_code).first())
+    if not db_url:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"URL with short code '{short_code}' not found."
+        )
+
+    # Optionally increment the click count
+    db_url.click_count += 1
+    db.commit()
+    db.refresh(db_url)
+
+    # Return a redirect response to the original long URL
+    return RedirectResponse(url=db_url.long_url, status_code=status.HTTP_302_FOUND)
